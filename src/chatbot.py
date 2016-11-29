@@ -64,7 +64,7 @@ class ChatBot(object):
 
         for intent in result['intents']:
             if intent['intent'] == "TellMeTheNews":
-                for article in n.request()['articles'][:5:
+                for article in n.request()['articles'][:5]:
                     self.post_to_slack(article['url'], channel)
               
        
