@@ -86,7 +86,7 @@ class ChatBot(object):
         news_api = news.NewsAPI()
         news_api.source = "abc-news-au"
 
-        status_code, content = news.request()
+        status_code, content = news_api.request()
 
         if status_code == 200:
             for article in content['articles'][:5]:
@@ -108,10 +108,11 @@ class ChatBot(object):
         weather_api = weather.WeatherAPI() 
 
         entities = alchemy_api.request_entities(command)
-
+        city_found = False
         if entities and len(entities) > 0:
             for entity in entities:
                 if 'type' in entity and entity['type'] == 'City' and 'disambiguated' in entity:
+                    city_found = True 
                     entity_details = entity['disambiguated'] 
                     if 'geo' in entity_details:
                         geocodes = entity_details['geo'].split()
@@ -135,16 +136,16 @@ class ChatBot(object):
                         print "ERROR: A city was found, but the AlchemyAPI is not providing the geocodes necessary to make a request to the Weather API. This might be because of lack of detail, but it also might be because of limitations in the Alchemy API"
                         error = "Sorry, you did give me a city but I'm afraid I just can't find it. Maybe try specifying it in a different way."
                         self.post_to_slack(error, channel)
-                else:
-                    # Error because you specified a city, but not in enough detail
-                    print "ERROR: Request for Weather in City does not provide enough detail to find the correct city along with its accompanying information."
-                    error = "I couldn't find the city based on that request. Could you perhaps try to provide a little more detail?"
-                    self.post_to_slack(error, channel)
-            else:
-                # Error because you didn't specify a city
-                print "ERROR: User didn't specify a city"
-                error = "Please try again, this time specifying a city."
+            if not city_found:
+                # Error because you specified a city, but not in enough detail
+                print "ERROR: Request for Weather in City does not provide enough detail to find the correct city along with its accompanying information."
+                error = "I couldn't find the city based on that request. Could you perhaps try to provide a little more detail?"
                 self.post_to_slack(error, channel)
+        else:
+            # Error because you didn't specify a city
+            print "ERROR: User didn't specify a city"
+            error = "Please try again, this time specifying a city."
+            self.post_to_slack(error, channel)
 
                     
 
