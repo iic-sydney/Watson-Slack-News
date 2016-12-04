@@ -122,7 +122,7 @@ class ChatBot(object):
                         weather_status, weather_response = weather_api.request_weather(latitude, longitude)
 
                         if weather_status == 200:
-                            temp = weather_content['observation']['temp']
+                            temp = weather_response['observation']['temp']
                             response = "The weather in {0} is currently {1} degrees celsius.".format(city_name)
                             self.post_to_slack(response, channel)
                         else:
