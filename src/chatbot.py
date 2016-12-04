@@ -123,7 +123,7 @@ class ChatBot(object):
 
                         if weather_status == 200:
                             temp = weather_response['observation']['temp']
-                            response = "The weather in {0} is currently {1} degrees celsius.".format(city_name)
+                            response = "The weather in {0} is currently {1} degrees celsius.".format(city_name, temp)
                             self.post_to_slack(response, channel)
                         else:
                             # Error - bad request made (shouldn't happen) or maybe the service is down or has reached its limit of calls for the month
