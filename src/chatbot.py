@@ -11,6 +11,7 @@ class ChatBot(object):
         self.slack_client = slack_client 
         self.delay = float(delay)
         self.bot = {}
+        self.active = False
         self.bot['name'] = bot_name
         self.watson = watson.Conversation()
      
@@ -59,24 +60,32 @@ class ChatBot(object):
         print(": Message: ", command)
        
         # Push to watson conversations API
-        result = self.watson.post(command) 
+        watson_result = self.watson.post(command) 
         
-        # This is how watson conversations has decided to respond 
-        for message in result['output']['text']: 
-            self.post_to_slack(message, channel)
-
         # These are the intents that watson conversations got. 
-        intents = result['intents']
+        intents = watson_result['intents']
         
-        # If an intent exists that requires the bot to fetch some data, like news or weather,
-        # pass it off to the relevant function. Otherwise it's just conversational, and Watson Conversations API
-        # has probably already handled it
+        # Just rudimentary check to see if the bot is active
         for intent in intents:
-            if intent['intent'] == "TellMeTheNews":
-                self.say_the_news(command, channel)
-            if intent['intent'] == "TellMeTheWeather":
-                self.say_the_weather(command, channel)
-                
+            if intent['intent'] == "ActivateWatson":
+                print "Watson bot is now active"
+                self.active = True
+            elif intent['intent'] == "DeactivateWatson":
+                print "Watson bot is now inactive"
+                self.active = False
+
+        if self.active:
+            for message in watson_result['output']['text']:
+                self.post_to_slack(message, channel)
+            for intent in intents:
+                if intent['intent'] == "TellMeTheNews":
+                    self.say_the_news(command, channel)
+                elif intent['intent'] == "TellMeTheWeather":
+                    self.say_the_weather(command, channel)
+        else:
+            print "Watson bot will not respond to this message as it is not active."
+               
+    
     def say_the_news(self, command, channel):
         """
             Fetches 5 articles from the abc and regurgitates them to the user.
