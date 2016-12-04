@@ -15,4 +15,4 @@ class NewsAPI(object):
     def request(self):
         params = {'source': self.source, 'apiKey': self.key}
         ret = requests.get(self.url, params=params)
-        return json.loads(ret.content) 
+        return ret.status, json.loads(ret.content) 

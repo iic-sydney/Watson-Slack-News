@@ -2,4 +2,4 @@
 
 dir=`pwd`
 
-python "$dir/src/main.py"
+python "$dir/src/main.py" & > ./run.log

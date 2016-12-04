@@ -1,0 +1,7 @@
+# Gets Sydney location
+https://twcservice.au-syd.mybluemix.net/api/weather/v3/location/search?query=Sydney&locationType=city&countryCode=AU&language=en-US
+
+# Gets Sydney current weather, based on the city.
+https://twcservice.au-syd.mybluemix.net/api/weather/v1/geocode/-33.86/151.21/observations.json?units=m&language=en-US
+
+
